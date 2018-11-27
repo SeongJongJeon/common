@@ -1,14 +1,13 @@
 package utils;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class DateUtil {
+    //ZoneId.of("UTC")
+    //ZoneId.of("Asia/Seoul")
     private static ZoneId zoneId = ZoneId.systemDefault();
 
     public static LocalDate getLocalDate() {
@@ -28,12 +27,12 @@ public class DateUtil {
     }
 
     /**
-     * 현재 날짜와 시간에 대해 System 기본 타임존을 기준으로 생성하여 리턴한다.
+     * 현재 날짜와 시간에 대해 System 기본 타임존을 기준으로 생성하여 리턴한다. (Date TimeZone 가지고 있지 않음. 해서 Date를 가지고 TimeZone 클래스로 변환하면 각국의 시간을 구할 수 있음)
      *
      * @return
      */
     public static Date getDate() {
-        return Date.from(LocalDateTime.now().atZone(ZoneId.systemDefault()).toInstant());
+        return Date.from(LocalDateTime.now(zoneId).atZone(zoneId).toInstant());
     }
 
     public static Date getDate(int addMonths, int hour, int minute, int second, int nanoOfSecond) {
@@ -161,5 +160,29 @@ public class DateUtil {
      */
     public static LocalDateTime generateLocalDateTimeByString(String date, String format) {
         return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(format));
+    }
+
+    /**
+     * LocalDate 사이의 차이를 구함
+     *
+     * @param date1
+     * @param date2
+     * @return
+     */
+    public static int diffLocalDate(LocalDate date1, LocalDate date2) {
+        Period pe = Period.between(date1, date2);
+        return pe.getYears();
+    }
+
+    /**
+     * LocalTime 사이의 차이를 구함
+     *
+     * @param time1
+     * @param time2
+     * @return
+     */
+    public static long diffLocalTime(LocalTime time1, LocalTime time2) {
+        Duration d = Duration.between(time1, time2);
+        return d.getSeconds();
     }
 }
