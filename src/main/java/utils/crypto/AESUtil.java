@@ -12,6 +12,11 @@ import java.security.Security;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
+/**
+ * 대칭키 알고리즘.
+ * - KEY 및 IV(Initialization Vector)는 랜덤하게 추출하지만 Password 를 이용하여 사용할 수 있도록 함. (PBKDF2 알고리즘 사용)
+ * - 운영보드(Operation Mode)는 ECB(사용하면 안), CBC, GCM 중 가장 좋은 GCM 사용.
+ */
 public class AESUtil {
     private static final String SALT = "COMMON_SALT";
     private static final int ITERATION_CNT = 1000;
