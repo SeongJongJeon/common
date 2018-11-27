@@ -75,4 +75,39 @@ public class CryptoUtil {
             return this.value;
         }
     }
+
+    public enum ECCSigAlgorithm {
+        SHA128("SHA1withECDSA"),
+        SHA256("SHA256withECDSA"),
+        SHA512("SHA512withECDSA");
+
+        private String value;
+
+        ECCSigAlgorithm(String value) {
+            this.value = value;
+        }
+
+        @JsonCreator
+        public static ECCSigAlgorithm fromValue(String value) {
+            switch (value) {
+                case "SHA1withECDSA":
+                    return SHA128;
+                case "SHA256withECDSA":
+                    return SHA256;
+                case "SHA512withECDSA":
+                    return SHA512;
+            }
+            return SHA128;
+        }
+
+        /**
+         * Use serialize
+         *
+         * @return
+         */
+        @JsonValue
+        public String toValue() {
+            return this.value;
+        }
+    }
 }
