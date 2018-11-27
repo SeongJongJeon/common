@@ -1,0 +1,8 @@
+**/build/*
+**/dependency-reduced-pom.xml
+**/src-gen
+**/.idea
+.gradle
+.project
+out/*
+**/*.iml
