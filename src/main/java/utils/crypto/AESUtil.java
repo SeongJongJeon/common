@@ -12,6 +12,8 @@ import java.security.Security;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
 
+import static utils.crypto.CryptoUtil.CHAR_SET;
+
 /**
  * 대칭키 알고리즘.
  * - KEY 및 IV(Initialization Vector)는 랜덤하게 추출하지만 Password 를 이용하여 사용할 수 있도록 함. (PBKDF2 알고리즘 사용)
@@ -19,7 +21,7 @@ import java.util.Arrays;
  */
 public class AESUtil {
     private static final String SALT = "COMMON_SALT";
-    private static final int ITERATION_CNT = 1000;
+    private static final int ITERATION_CNT = 1000;  //충분한 반복을 해줘야 안전함.
 
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -48,7 +50,7 @@ public class AESUtil {
                 cipher.updateAAD(associatedData);
             }
 
-            return Base64Util.encode(cipher.doFinal(plainText.getBytes()));
+            return Base64Util.encode(cipher.doFinal(plainText.getBytes(CHAR_SET)));
         } catch (Exception e) {
             e.printStackTrace();
         }
