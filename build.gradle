@@ -12,12 +12,26 @@ repositories {
 }
 
 dependencies {
+    def jacksonVersion = '2.9.6'
+    
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
 
-    //Crypto
+    /* Json */
+    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion"
+
+    /* Crypto */
     //The Bouncy Castle Crypto package is a Java implementation of cryptographic algorithm
     compile("org.bouncycastle:bcprov-jdk15on:1.60")
     //The Bouncy Castle Java APIs for CMS, PKCS, EAC, TSP, CMP, CRMF, OCSP, and certificate generation. This jar contains APIs for JDK 1.5 to JDK 1.8. The APIs can be used in conjunction with a JCE/JCA provider such as the one provided with the Bouncy Castle Cryptography APIs.
     compile("org.bouncycastle:bcpkix-jdk15on:1.60")
+
+    /* Base64 */
+    compile("commons-codec:commons-codec:1.11")
+
+    /* File */
+    compile("commons-io:commons-io:2.6")
 }
