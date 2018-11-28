@@ -1,10 +1,12 @@
 package utils.crypto;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 
+@Slf4j
 public class Base64Util {
     public static String encode(String val) {
         return new String(Base64.encodeBase64(val.getBytes()));
@@ -18,8 +20,9 @@ public class Base64Util {
         try {
             return new String(Base64.encodeBase64(FileUtils.readFileToByteArray(file)));
         } catch (Exception e) {
-            return null;
+            log.error(e.getMessage());
         }
+        return null;
     }
 
     public static String decodeStr(String val) {

@@ -1,5 +1,6 @@
 package utils.crypto.asymmetric;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import utils.crypto.Base64Util;
 
@@ -13,6 +14,7 @@ import static utils.crypto.CryptoUtil.CHAR_SET;
  * - 데이터 암복호화 사용
  * - 송신자가 수신자의 공개키로 평문을 암호화하고 수신자는 암호문을 수신자의 개인키로 복호화
  */
+@Slf4j
 public class RSAUtil {
     private static final String ALGORITHM = "RSA";
 
@@ -27,7 +29,7 @@ public class RSAUtil {
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
             return keyPair;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -38,7 +40,7 @@ public class RSAUtil {
             cipher.init(Cipher.ENCRYPT_MODE, pubKey);
             return Base64Util.encode(cipher.doFinal(plainText.getBytes(CHAR_SET)));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -51,7 +53,7 @@ public class RSAUtil {
             cipher.init(Cipher.DECRYPT_MODE, privKey);
             return new String(cipher.doFinal(cipherText), "UTF-8");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }

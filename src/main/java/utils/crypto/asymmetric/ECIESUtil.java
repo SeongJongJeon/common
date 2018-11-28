@@ -1,5 +1,6 @@
 package utils.crypto.asymmetric;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import utils.crypto.Base64Util;
 
@@ -19,6 +20,7 @@ import static utils.crypto.CryptoUtil.CHAR_SET;
  * - 수신자의 Public Key를 이용하여 메시지를 암호화한다.
  * - 수신자의 Private Key를 이용하여 메시지를 복호화한다.
  */
+@Slf4j
 public class ECIESUtil {
     public static String encrypt(PublicKey publicKeyOfReceiver, String plainText) {
         try {
@@ -26,6 +28,7 @@ public class ECIESUtil {
             cipher.init(Cipher.ENCRYPT_MODE, publicKeyOfReceiver);
             return Base64Util.encode(cipher.doFinal(plainText.getBytes(CHAR_SET)));
         } catch (Exception e) {
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -38,6 +41,7 @@ public class ECIESUtil {
             cipher.init(Cipher.DECRYPT_MODE, privKey);
             return new String(cipher.doFinal(cipherText), CHAR_SET);
         } catch (Exception e) {
+            log.error(e.getMessage());
         }
         return null;
     }

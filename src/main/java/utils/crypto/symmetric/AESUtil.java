@@ -1,5 +1,6 @@
 package utils.crypto.symmetric;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import utils.crypto.Base64Util;
 import utils.crypto.CryptoUtil;
@@ -21,6 +22,7 @@ import static utils.crypto.CryptoUtil.CHAR_SET;
  * - KEY 및 IV(Initialization Vector)는 랜덤하게 추출하지만 Password 를 이용하여 사용할 수 있도록 함. (PBKDF2 알고리즘 사용)
  * - 운영보드(Operation Mode)는 ECB(사용하면 안), CBC, GCM 중 가장 좋은 GCM 사용.
  */
+@Slf4j
 public class AESUtil {
     private static final String SALT = "COMMON_SALT";
     private static final int ITERATION_CNT = 1000;  //충분한 반복을 해줘야 안전함.
@@ -55,7 +57,7 @@ public class AESUtil {
 
             return Base64Util.encode(cipher.doFinal(plainText.getBytes(CHAR_SET)));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -72,7 +74,7 @@ public class AESUtil {
 
             return new String(cipher.doFinal(cipherText), "UTF-8");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -93,7 +95,7 @@ public class AESUtil {
 
             return Base64Util.encode(cipher.doFinal(plainText.getBytes(CHAR_SET)));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -109,7 +111,7 @@ public class AESUtil {
 
             return new String(cipher.doFinal(cipherText), "UTF-8");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }

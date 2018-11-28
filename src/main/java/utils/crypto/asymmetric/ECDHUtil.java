@@ -1,5 +1,7 @@
 package utils.crypto.asymmetric;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.crypto.KeyAgreement;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -15,6 +17,7 @@ import java.security.PublicKey;
  * - 상대도 상대의 Private Key와 나의 Public Key를 이용하여 같은 Key 값을 추출할 수 있다.
  * - 이 Key를 이용하여 AES와 같이 대칭키 알고리즘을 이용하여 메시지를 암, 복호화 할 수 있다.
  */
+@Slf4j
 public class ECDHUtil {
     /**
      * 자신의 Private Key로 다른 사람이 전송한 Public Key를 동의한다.
@@ -30,7 +33,7 @@ public class ECDHUtil {
 
             return ka.generateSecret();
         } catch (Exception e) {
-
+            log.error(e.getMessage());
         }
         return null;
     }

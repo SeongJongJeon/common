@@ -1,7 +1,9 @@
 package utils.crypto;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 
+@Slf4j
 public class HexUtil {
     public static char[] encode(byte[] data) {
         return Hex.encodeHex(data);
@@ -15,6 +17,7 @@ public class HexUtil {
         try {
             return Hex.decodeHex(data);
         } catch (Exception e) {
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -23,6 +26,7 @@ public class HexUtil {
         try {
             return Hex.decodeHex(data);
         } catch (Exception e) {
+            log.error(e.getMessage());
         }
         return null;
     }

@@ -3,6 +3,7 @@ package utils.crypto.asymmetric;
 import crypto.RootCA;
 import crypto.X509CSRReq;
 import crypto.X509CSRRes;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.asn1.*;
 import org.bouncycastle.asn1.x500.X500Name;
@@ -29,6 +30,7 @@ import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+@Slf4j
 public class CertByECCUtil {
     /**
      * 인증서의 Hex String 값을 X509Certificate로 변환
@@ -53,7 +55,7 @@ public class CertByECCUtil {
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
             cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(decoded));
         } catch (Exception e) {
-            return null;
+            log.error(e.getMessage());
         }
 
         return cert;
@@ -74,7 +76,7 @@ public class CertByECCUtil {
             cert.checkValidity(new Date());
             cert.verify(ECDSAUtil.generatePubStringToPubKey(hexPublicKey), provider);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
             return false;
         }
 
@@ -102,7 +104,7 @@ public class CertByECCUtil {
             }
             return checkValidity(rootCA.getRootCertHex(), rootCA.getHexPublicKey(), false);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return false;
     }
@@ -121,7 +123,7 @@ public class CertByECCUtil {
             SubjectPublicKeyInfo pubKeyInfo = new JcaX509CertificateHolder(cert).getSubjectPublicKeyInfo();
             pubKey = Hex.encodeHexString(pubKeyInfo.getEncoded());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         return pubKey;
@@ -157,7 +159,7 @@ public class CertByECCUtil {
                 crlTx = gn.getName().toString();
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         return crlTx;
@@ -176,6 +178,7 @@ public class CertByECCUtil {
         try {
             permString += encoder.encode(cert.getEncoded()) + "\n";
         } catch (Exception e) {
+            log.error(e.getMessage());
             return null;
         }
         permString += X509Factory.END_CERT;
@@ -275,7 +278,7 @@ public class CertByECCUtil {
             x509CSRRes.setHex(Hex.encodeHexString(cert.getEncoded()));
             x509CSRRes.setPem(generatePem(cert));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return x509CSRRes;
     }

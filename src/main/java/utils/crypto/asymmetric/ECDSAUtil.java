@@ -1,5 +1,6 @@
 package utils.crypto.asymmetric;
 
+import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.sec.SECNamedCurves;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.params.ECDomainParameters;
@@ -26,6 +27,7 @@ import java.security.spec.X509EncodedKeySpec;
  * - 전사서명에 사용
  * - 비밀키로 서명하고 공개키로 검증한다.
  */
+@Slf4j
 public class ECDSAUtil {
     static {
         Security.addProvider(new BouncyCastleProvider());
@@ -39,7 +41,7 @@ public class ECDSAUtil {
             keyPairGenerator.initialize(new ECGenParameterSpec(eccAlgorithm.toValue()), secureRandom);
             return keyPairGenerator.generateKeyPair();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return null;
     }
@@ -92,7 +94,7 @@ public class ECDSAUtil {
             KeyFactory fact = KeyFactory.getInstance("EC");
             privateKey = fact.generatePrivate(new PKCS8EncodedKeySpec(HexUtil.decodeHex(privateString.toCharArray())));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return privateKey;
     }
@@ -109,7 +111,7 @@ public class ECDSAUtil {
             KeyFactory fact = KeyFactory.getInstance("EC");
             publicKey = fact.generatePublic(new X509EncodedKeySpec(HexUtil.decodeHex(pubString.toCharArray())));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return publicKey;
     }
@@ -132,7 +134,7 @@ public class ECDSAUtil {
             sig.update(plaintext.getBytes());
             isVerify = sig.verify(HexUtil.decodeHex(signature.toCharArray()));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return isVerify;
     }
@@ -154,7 +156,7 @@ public class ECDSAUtil {
             sig.update(plainText.getBytes());
             signature = sig.sign();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
         return HexUtil.encodeString(signature);
     }
