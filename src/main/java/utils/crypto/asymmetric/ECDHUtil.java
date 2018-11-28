@@ -10,7 +10,8 @@ import java.security.PublicKey;
  * - ECDSA (Elliptic Curve Digital Signature Algorithm) : 전자서명 (즉 ECC를 이용하여 전자서명을 위해 사용한 것을 ECDSA라고 함.)
  * - ECDH (Elliptic Curve Diff-Hellman) : 키교환알고즘 (RSA의 diff-hellman 키교환 알고리즘과 마찬가지로 키교환을 위한 알고리즘 이다.)
  * - 자신의 Private Key와 상대의 Public Key를 이용하여 공통된 Key 값을 추출한다.
- * - 해당 키를 이용하여 AES 등을 이용하여 데이터를 암,복호화 하여 메시지를 교환할 수 있다.
+ * - 상대도 상대의 Private Key와 나의 Public Key를 이용하여 같은 Key 값을 추출할 수 있다.
+ * - 이 Key를 이용하여 AES와 같이 대칭키 알고리즘을 이용하여 메시지를 암, 복호화 할 수 있다.
  */
 public class ECDHUtil {
     /**
