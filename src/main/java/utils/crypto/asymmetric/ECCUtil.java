@@ -23,8 +23,7 @@ public class ECCUtil {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
             keyPairGenerator.initialize(new ECGenParameterSpec(eccAlgorithm.toValue()));
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            return keyPair;
+            return keyPairGenerator.generateKeyPair();
         } catch (Exception e) {
             e.printStackTrace();
         }
