@@ -1,4 +1,4 @@
-package utils.crypto;
+package utils.crypto.asymmetric;
 
 import org.junit.Test;
 import utils.crypto.asymmetric.RSAUtil;

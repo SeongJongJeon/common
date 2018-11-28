@@ -45,7 +45,7 @@ public class AESUtil {
 
             SecretKey secretKey = new SecretKeySpec(key, "AES");
 
-            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", BouncyCastleProvider.PROVIDER_NAME);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(cryptoBit.toValue(), iv));
             //Optional associated data (for instance meta data)
             byte[] associatedData = null;
@@ -67,7 +67,7 @@ public class AESUtil {
             byte[] iv = Arrays.copyOfRange(key, key.length - 12, key.length);   //For GCM (IV = Initial Vector)
 
             SecretKey secretKey = new SecretKeySpec(key, "AES");
-            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", BouncyCastleProvider.PROVIDER_NAME);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(cryptoBit.toValue(), iv));
 
             return new String(cipher.doFinal(cipherText), "UTF-8");
@@ -83,7 +83,7 @@ public class AESUtil {
 
             SecretKey secretKey = new SecretKeySpec(key, "AES");
 
-            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", BouncyCastleProvider.PROVIDER_NAME);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(cryptoBit.toValue(), iv));
             //Optional associated data (for instance meta data)
             byte[] associatedData = null;
@@ -104,7 +104,7 @@ public class AESUtil {
             byte[] iv = Arrays.copyOfRange(key, key.length - 12, key.length);   //For GCM (IV = Initial Vector)
 
             SecretKey secretKey = new SecretKeySpec(key, "AES");
-            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", BouncyCastleProvider.PROVIDER_NAME);
             cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(cryptoBit.toValue(), iv));
 
             return new String(cipher.doFinal(cipherText), "UTF-8");

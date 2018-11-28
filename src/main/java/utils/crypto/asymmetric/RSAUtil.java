@@ -34,7 +34,7 @@ public class RSAUtil {
 
     public static String encrypt(String plainText, PublicKey pubKey) {
         try {
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "BC");
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", BouncyCastleProvider.PROVIDER_NAME);
             cipher.init(Cipher.ENCRYPT_MODE, pubKey);
             return Base64Util.encode(cipher.doFinal(plainText.getBytes(CHAR_SET)));
         } catch (Exception e) {
@@ -47,7 +47,7 @@ public class RSAUtil {
         try {
             byte[] cipherText = Base64Util.decode(base64CipherText);
             // decrypt the text using the private key
-            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", "BC");
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding", BouncyCastleProvider.PROVIDER_NAME);
             cipher.init(Cipher.DECRYPT_MODE, privKey);
             return new String(cipher.doFinal(cipherText), "UTF-8");
         } catch (Exception e) {

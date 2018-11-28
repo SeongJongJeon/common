@@ -1,4 +1,4 @@
-package utils.crypto;
+package utils.crypto.asymmetric;
 
 import crypto.AuthenticationReq;
 import crypto.RootCA;
@@ -6,8 +6,8 @@ import crypto.X509CSRReq;
 import crypto.X509CSRRes;
 import org.junit.Test;
 import utils.DateUtil;
-import utils.crypto.asymmetric.CertByECCUtil;
-import utils.crypto.asymmetric.ECDSAUtil;
+import utils.crypto.CryptoUtil;
+import utils.crypto.HexUtil;
 
 import java.security.KeyPair;
 

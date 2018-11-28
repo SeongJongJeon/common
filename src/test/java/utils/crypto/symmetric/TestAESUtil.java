@@ -1,6 +1,7 @@
-package utils.crypto;
+package utils.crypto.symmetric;
 
 import org.junit.Test;
+import utils.crypto.CryptoUtil;
 import utils.crypto.symmetric.AESUtil;
 
 import static org.junit.Assert.assertEquals;

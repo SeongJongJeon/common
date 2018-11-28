@@ -1,6 +1,7 @@
-package utils.crypto;
+package utils.crypto.asymmetric;
 
 import org.junit.Test;
+import utils.crypto.CryptoUtil;
 import utils.crypto.asymmetric.ECDHUtil;
 import utils.crypto.asymmetric.ECDSAUtil;
 import utils.crypto.symmetric.AESUtil;
