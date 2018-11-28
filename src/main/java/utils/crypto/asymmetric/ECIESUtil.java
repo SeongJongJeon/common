@@ -36,7 +36,7 @@ public class ECIESUtil {
 
             Cipher cipher = Cipher.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
             cipher.init(Cipher.DECRYPT_MODE, privKey);
-            return new String(cipher.doFinal(cipherText), "UTF-8");
+            return new String(cipher.doFinal(cipherText), CHAR_SET);
         } catch (Exception e) {
         }
         return null;
