@@ -72,7 +72,7 @@ public class CertByECCUtil {
             Provider provider = new BouncyCastleProvider();
 
             cert.checkValidity(new Date());
-            cert.verify(ECCUtil.generatePubStringToPubKey(hexPublicKey), provider);
+            cert.verify(ECDSAUtil.generatePubStringToPubKey(hexPublicKey), provider);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -226,7 +226,7 @@ public class CertByECCUtil {
             subjectNameBuilder.addRDN(BCStyle.C, clientCSR.getCountryCode());
             subjectNameBuilder.addRDN(BCStyle.O, clientCSR.getOrganization());
             subjectNameBuilder.addRDN(BCStyle.OU, clientCSR.getOrganizationUtit());
-            PublicKey publicKey = ECCUtil.generatePubStringToPubKey(clientCSR.getHexPublicKey());
+            PublicKey publicKey = ECDSAUtil.generatePubStringToPubKey(clientCSR.getHexPublicKey());
 
             X509v3CertificateBuilder certBuilder = new JcaX509v3CertificateBuilder(
                     issuerNameBuilder.build(),
@@ -262,14 +262,14 @@ public class CertByECCUtil {
             //Signature, Self Signed Certificate(SSC) : ROOT CA는 서명해줄 인증기관이 없으므로 본인의 개인키로 서명함.
             Provider provider = new BouncyCastleProvider();
             ContentSigner sigGen = new JcaContentSignerBuilder(clientCSR.getEccSigAlgorithm().toValue())
-                    .setProvider(provider).build(ECCUtil.generatePrivateStringToPrivateKey(rootCA.getRootHexPrivKey()));
+                    .setProvider(provider).build(ECDSAUtil.generatePrivateStringToPrivateKey(rootCA.getRootHexPrivKey()));
 
             X509Certificate cert = new JcaX509CertificateConverter().setProvider(provider)
                     .getCertificate(certBuilder.build(sigGen));
             cert.checkValidity(new Date());
 
             //Root CA의 publicKey로 검증
-            cert.verify(ECCUtil.generatePubStringToPubKey(rootCA.getHexPublicKey()));
+            cert.verify(ECDSAUtil.generatePubStringToPubKey(rootCA.getHexPublicKey()));
 
             x509CSRRes = new X509CSRRes();
             x509CSRRes.setHex(Hex.encodeHexString(cert.getEncoded()));

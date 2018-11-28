@@ -7,25 +7,25 @@ import crypto.X509CSRRes;
 import org.junit.Test;
 import utils.DateUtil;
 import utils.crypto.asymmetric.CertByECCUtil;
-import utils.crypto.asymmetric.ECCUtil;
+import utils.crypto.asymmetric.ECDSAUtil;
 
 import java.security.KeyPair;
 
 import static org.junit.Assert.assertNotNull;
 
-public class TestCertByECCUtil {
+public class TestCertByECDSAUtil {
     @Test
     public void crs() {
         //Root CA 생성
-        KeyPair keyPair = ECCUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
+        KeyPair keyPair = ECDSAUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
 
         RootCA rootCA = new RootCA();
-        rootCA.setRootHexPrivKey(ECCUtil.generateHexString(keyPair.getPrivate().getEncoded()));
-        rootCA.setHexPublicKey(ECCUtil.generateHexString(keyPair.getPublic().getEncoded()));
+        rootCA.setRootHexPrivKey(ECDSAUtil.generateHexString(keyPair.getPrivate().getEncoded()));
+        rootCA.setHexPublicKey(ECDSAUtil.generateHexString(keyPair.getPublic().getEncoded()));
 
         X509CSRReq x509CSRReq = new X509CSRReq();
         x509CSRReq.setEccSigAlgorithm(CryptoUtil.ECCSigAlgorithm.SHA256);
-        x509CSRReq.setHexPublicKey(ECCUtil.generateHexString(keyPair.getPublic().getEncoded()));
+        x509CSRReq.setHexPublicKey(ECDSAUtil.generateHexString(keyPair.getPublic().getEncoded()));
         x509CSRReq.setCn("www.common.com");
         x509CSRReq.setCountryCode("KR");
         x509CSRReq.setOrganization("Common");
@@ -40,11 +40,11 @@ public class TestCertByECCUtil {
         rootCA.setRootCertHex(x509CSRRes.getHex());
 
         //Client 인증서 생성
-        keyPair = ECCUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
+        keyPair = ECDSAUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
 
         x509CSRReq = new X509CSRReq();
         x509CSRReq.setEccSigAlgorithm(CryptoUtil.ECCSigAlgorithm.SHA256);
-        x509CSRReq.setHexPublicKey(ECCUtil.generateHexString(keyPair.getPublic().getEncoded()));
+        x509CSRReq.setHexPublicKey(ECDSAUtil.generateHexString(keyPair.getPublic().getEncoded()));
         x509CSRReq.setCn("전성종");
         x509CSRReq.setCountryCode("KR");
         x509CSRReq.setOrganization("Soul");
@@ -59,13 +59,13 @@ public class TestCertByECCUtil {
         String plainText = "아이고야!";
         AuthenticationReq authenticationReq = new AuthenticationReq();
         authenticationReq.setPlainText(plainText);
-        authenticationReq.setCipherText(ECCUtil.signature(CryptoUtil.ECCSigAlgorithm.SHA256, plainText, ECCUtil.generateHexString(keyPair.getPrivate().getEncoded())));   //서명
+        authenticationReq.setCipherText(ECDSAUtil.signature(CryptoUtil.ECCSigAlgorithm.SHA256, plainText, ECDSAUtil.generateHexString(keyPair.getPrivate().getEncoded())));   //서명
         authenticationReq.setPem(x509CSRRes.getPem());
 
         String crl = CertByECCUtil.extractCertificateRevocationList(authenticationReq.getPem(), true);  //인증서 폐기목록 추출 (해당 정보를 통하여 인증서 폐기여부를 조회해야 함.)
 
         boolean isSuccess = CertByECCUtil.validateUserCert(rootCA, authenticationReq.getPem(), true);
-        boolean isSuccessSig = ECCUtil.verifySignature(CryptoUtil.ECCSigAlgorithm.SHA256, authenticationReq.getPlainText(), authenticationReq.getCipherText(), authenticationReq.extractPubKeyByPem());
+        boolean isSuccessSig = ECDSAUtil.verifySignature(CryptoUtil.ECCSigAlgorithm.SHA256, authenticationReq.getPlainText(), authenticationReq.getCipherText(), authenticationReq.extractPubKeyByPem());
         System.out.println(isSuccess + " : " + isSuccessSig);
     }
 }
