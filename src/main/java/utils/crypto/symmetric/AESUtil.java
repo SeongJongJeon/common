@@ -76,4 +76,41 @@ public class AESUtil {
         }
         return null;
     }
+
+    public static String encryptByKey(String plainText, byte[] key, CryptoUtil.CryptoBit cryptoBit) {
+        try {
+            byte[] iv = Arrays.copyOfRange(key, key.length - 12, key.length);   //For GCM (IV = Initial Vector)
+
+            SecretKey secretKey = new SecretKeySpec(key, "AES");
+
+            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey, new GCMParameterSpec(cryptoBit.toValue(), iv));
+            //Optional associated data (for instance meta data)
+            byte[] associatedData = null;
+            if (associatedData != null) {
+                cipher.updateAAD(associatedData);
+            }
+
+            return Base64Util.encode(cipher.doFinal(plainText.getBytes(CHAR_SET)));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String decryptByKey(String base64CipherText, byte[] key, CryptoUtil.CryptoBit cryptoBit) {
+        try {
+            byte[] cipherText = Base64Util.decode(base64CipherText);
+            byte[] iv = Arrays.copyOfRange(key, key.length - 12, key.length);   //For GCM (IV = Initial Vector)
+
+            SecretKey secretKey = new SecretKeySpec(key, "AES");
+            final Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding", "BC");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey, new GCMParameterSpec(cryptoBit.toValue(), iv));
+
+            return new String(cipher.doFinal(cipherText), "UTF-8");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
