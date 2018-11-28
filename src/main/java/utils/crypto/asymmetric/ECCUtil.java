@@ -1,7 +1,8 @@
-package utils.crypto;
+package utils.crypto.asymmetric;
 
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import utils.crypto.CryptoUtil;
 
 import java.security.*;
 import java.security.spec.ECGenParameterSpec;

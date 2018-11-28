@@ -3,7 +3,7 @@ package crypto;
 import lombok.Data;
 import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.cert.jcajce.JcaX509CertificateHolder;
-import utils.crypto.CertByECCUtil;
+import utils.crypto.asymmetric.CertByECCUtil;
 
 import java.security.cert.X509Certificate;
 
@@ -13,7 +13,7 @@ public class AuthenticationReq {
     private String cipherText;
     private String pem;
 
-    public String extractPubkeyByPem() {
+    public String extractPubKeyByPem() {
         try {
             X509Certificate certificate = CertByECCUtil.generateHexStrToCert(pem, true);
             JcaX509CertificateHolder certificateHolder = new JcaX509CertificateHolder(certificate);

@@ -1,6 +1,7 @@
-package utils.crypto;
+package utils.crypto.asymmetric;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import utils.crypto.Base64Util;
 
 import javax.crypto.Cipher;
 import java.security.*;

@@ -1,4 +1,4 @@
-package utils.crypto;
+package utils.crypto.asymmetric;
 
 import crypto.RootCA;
 import crypto.X509CSRReq;

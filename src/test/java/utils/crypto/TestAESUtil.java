@@ -1,12 +1,16 @@
 package utils.crypto;
 
 import org.junit.Test;
+import utils.crypto.symmetric.AESUtil;
+
+import static org.junit.Assert.assertEquals;
 
 public class TestAESUtil {
     @Test
     public void encryptWithDecryptGCM() {
-        String cipherText = AESUtil.encryptGCM("하하ㅏ", "1111", CryptoUtil.CryptoBit.SMALL);
-        String plainText = AESUtil.decryptGCM(cipherText, "1111", CryptoUtil.CryptoBit.SMALL);
-        System.out.println(plainText);
+        String plainText = "하하ㅏ";
+        String cipherText = AESUtil.encryptGCM(plainText, "1111", CryptoUtil.CryptoBit.SMALL);
+        String originText = AESUtil.decryptGCM(cipherText, "1111", CryptoUtil.CryptoBit.SMALL);
+        assertEquals(plainText, originText);
     }
 }

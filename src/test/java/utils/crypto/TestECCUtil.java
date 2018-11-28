@@ -1,6 +1,7 @@
 package utils.crypto;
 
 import org.junit.Test;
+import utils.crypto.asymmetric.ECCUtil;
 
 import java.security.KeyPair;
 

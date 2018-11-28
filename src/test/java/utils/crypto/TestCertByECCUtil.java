@@ -6,6 +6,8 @@ import crypto.X509CSRReq;
 import crypto.X509CSRRes;
 import org.junit.Test;
 import utils.DateUtil;
+import utils.crypto.asymmetric.CertByECCUtil;
+import utils.crypto.asymmetric.ECCUtil;
 
 import java.security.KeyPair;
 
@@ -63,7 +65,7 @@ public class TestCertByECCUtil {
         String crl = CertByECCUtil.extractCertificateRevocationList(authenticationReq.getPem(), true);  //인증서 폐기목록 추출 (해당 정보를 통하여 인증서 폐기여부를 조회해야 함.)
 
         boolean isSuccess = CertByECCUtil.validateUserCert(rootCA, authenticationReq.getPem(), true);
-        boolean isSuccessSig = ECCUtil.verifySignature(CryptoUtil.ECCSigAlgorithm.SHA256, authenticationReq.getPlainText(), authenticationReq.getCipherText(), authenticationReq.extractPubkeyByPem());
+        boolean isSuccessSig = ECCUtil.verifySignature(CryptoUtil.ECCSigAlgorithm.SHA256, authenticationReq.getPlainText(), authenticationReq.getCipherText(), authenticationReq.extractPubKeyByPem());
         System.out.println(isSuccess + " : " + isSuccessSig);
     }
 }
