@@ -32,6 +32,7 @@ public class AESUtil {
     private static byte[] generateKeyByPassword(String password, CryptoUtil.CryptoBit cryptoBit) throws Exception {
         //128bit(16*8bit), 192bit(24), 256bit(32)
         SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+        //PBKDF2 (Password-Based Key Derivation Function 2) : 비밀번호 기반으로 random key 생성.
         //password, salt, iteration count, bit
         KeySpec keySpec = new PBEKeySpec(password.toCharArray(), SALT.getBytes(), ITERATION_CNT, cryptoBit.toValue());
         return secretKeyFactory.generateSecret(keySpec).getEncoded();
