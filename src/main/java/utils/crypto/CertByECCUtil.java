@@ -4,8 +4,7 @@ import crypto.RootCA;
 import crypto.X509CSRReq;
 import crypto.X509CSRRes;
 import org.apache.commons.codec.binary.Hex;
-import org.bouncycastle.asn1.ASN1EncodableVector;
-import org.bouncycastle.asn1.DERSequence;
+import org.bouncycastle.asn1.*;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.X500NameBuilder;
 import org.bouncycastle.asn1.x500.style.BCStyle;
@@ -34,21 +33,21 @@ public class CertByECCUtil {
     /**
      * 인증서의 Hex String 값을 X509Certificate로 변환
      *
-     * @param hexCert
+     * @param certVal
      * @return
      */
-    public static X509Certificate generateHexStrToCert(String hexCert, boolean isPem) {
+    public static X509Certificate generateHexStrToCert(String certVal, boolean isPem) {
         X509Certificate cert = null;
         try {
             byte[] decoded = null;
             if (isPem) {
                 BASE64Decoder decoder = new BASE64Decoder();
                 decoded = decoder.decodeBuffer(
-                        hexCert.replaceAll(X509Factory.BEGIN_CERT, "")
+                        certVal.replaceAll(X509Factory.BEGIN_CERT, "")
                                 .replaceAll(X509Factory.END_CERT, "")
                 );
             } else {
-                decoded = Hex.decodeHex(hexCert.toCharArray());
+                decoded = Hex.decodeHex(certVal.toCharArray());
             }
 
             CertificateFactory cf = CertificateFactory.getInstance("X.509");
@@ -83,6 +82,88 @@ public class CertByECCUtil {
     }
 
     /**
+     * 사용자 인증서 및 Root 인증서 유효성 검사
+     *
+     * @param rootCA
+     * @param clientCert
+     * @param isPem
+     * @return
+     */
+    public static boolean validateUserCert(RootCA rootCA, String clientCert, boolean isPem) {
+        try {
+            //클라이언트 인증서의 Root 인증서의 보관소의 정보를 넣은 후 보관소에서 Root 인증서를 조회하여 PubKey 추출
+            //현재 메소드는 RootCA를 입력받음
+//            X509Certificate certificate = generateHexStrToCert(clientCert, isPem);
+//            JcaX509CertificateHolder certificateHolder = new JcaX509CertificateHolder(certificate);
+//            String rootCertTxIdInUserCert = certificateHolder.getIssuer().getRDNs(BCStyle.UID)[0].getFirst().getValue().toString();
+//            String rootCertPubKey = extractPublicKeyByCert(rootCertHex, false);
+            if (!checkValidity(clientCert, rootCA.getHexPublicKey(), isPem)) {
+                return false;
+            }
+            return checkValidity(rootCA.getRootCertHex(), rootCA.getHexPublicKey(), false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * X509 인증서에서 public key 추출
+     *
+     * @param certVal
+     * @param isPem
+     * @return
+     */
+    public static String extractPublicKeyByCert(String certVal, boolean isPem) {
+        String pubKey = null;
+        try {
+            X509Certificate cert = generateHexStrToCert(certVal, isPem);
+            SubjectPublicKeyInfo pubKeyInfo = new JcaX509CertificateHolder(cert).getSubjectPublicKeyInfo();
+            pubKey = Hex.encodeHexString(pubKeyInfo.getEncoded());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return pubKey;
+    }
+
+    /**
+     * X509 인증서에서 CRL(Certificate Revocation List) 추출
+     *
+     * @param certVal
+     * @param isPem
+     * @return
+     */
+    public static String extractCertificateRevocationList(String certVal, boolean isPem) {
+        String crlTx = null;
+        try {
+            X509Certificate cert = generateHexStrToCert(certVal, isPem);
+
+            byte[] crlDistributionPointDerEncodedArray = cert.getExtensionValue(Extension.cRLDistributionPoints.getId());
+            ASN1InputStream oAsnInStream = new ASN1InputStream(new ByteArrayInputStream(crlDistributionPointDerEncodedArray));
+            ASN1Primitive derObjCrlDP = oAsnInStream.readObject();
+            DEROctetString dosCrlDP = (DEROctetString) derObjCrlDP;
+            oAsnInStream.close();
+
+            byte[] crldpExtOctets = dosCrlDP.getOctets();
+            ASN1InputStream oAsnInStream2 = new ASN1InputStream(new ByteArrayInputStream(crldpExtOctets));
+            ASN1Primitive derObj2 = oAsnInStream2.readObject();
+            CRLDistPoint distPoint = CRLDistPoint.getInstance(derObj2);
+            oAsnInStream2.close();
+
+            for (DistributionPoint dp : distPoint.getDistributionPoints()) {
+                DERSequence seq = (DERSequence) dp.getDistributionPoint().getName().toASN1Primitive();
+                GeneralName gn = (GeneralName) seq.getObjectAt(0);
+                crlTx = gn.getName().toString();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return crlTx;
+    }
+
+    /**
      * PEM 형식의 값으로 변환
      *
      * @param cert
@@ -102,25 +183,39 @@ public class CertByECCUtil {
         return permString;
     }
 
-    public X509CSRRes generateX509V3(RootCA rootCA, boolean isMakeRootCA, X509CSRReq clientCSR) {
+    /**
+     * X.509 V3 인증서 생성
+     *
+     * @param rootCA
+     * @param isMakeRootCA
+     * @param clientCSR
+     * @return
+     */
+    public static X509CSRRes generateX509V3(RootCA rootCA, boolean isMakeRootCA, X509CSRReq clientCSR) {
         X509CSRRes x509CSRRes = null;
+        X500Name rootX500Name = null;
 
         //Root CA 인증서 유효성 검사
         if (!isMakeRootCA) {
+            if (rootCA == null) {
+                return null;
+            }
             if (!checkValidity(rootCA.getRootCertHex(), rootCA.getHexPublicKey(), false)) {
                 return null;
             }
         }
 
         try {
-            X500Name rootX500Name = new JcaX509CertificateHolder(rootCA.getRootCert()).getIssuer();
+            if (!isMakeRootCA) {
+                rootX500Name = new JcaX509CertificateHolder(rootCA.getRootCert()).getIssuer();
+            }
             //발급자 정보 (Root CA)
             X500NameBuilder issuerNameBuilder = new X500NameBuilder(BCStyle.INSTANCE);
             issuerNameBuilder.addRDN(BCStyle.CN, isMakeRootCA ? clientCSR.getCn() : rootX500Name.getRDNs(BCStyle.CN)[0].getFirst().getValue().toString());
             issuerNameBuilder.addRDN(BCStyle.C, isMakeRootCA ? clientCSR.getCountryCode() : rootX500Name.getRDNs(BCStyle.C)[0].getFirst().getValue().toString());
             issuerNameBuilder.addRDN(BCStyle.O, isMakeRootCA ? clientCSR.getOrganization() : rootX500Name.getRDNs(BCStyle.O)[0].getFirst().getValue().toString());
             issuerNameBuilder.addRDN(BCStyle.OU, isMakeRootCA ? clientCSR.getOrganizationUtit() : rootX500Name.getRDNs(BCStyle.OU)[0].getFirst().getValue().toString());
-            //Root 인증서의 로그인 정보. (블록체인의 경우는 Tx Hash 값)
+            //Root 인증서 조회정보. (블록체인의 경우는 Tx Hash 값)
             if (isMakeRootCA) {
 //                issuerNameBuilder.addRDN(BCStyle.UID, x509CustomerCert.getRootCaTxId());
             }
@@ -155,7 +250,8 @@ public class CertByECCUtil {
                 certBuilder.addExtension(Extension.extendedKeyUsage, false, new DERSequence(purposes));
             } else {
                 //crlIssuer=CRL SmartContract address (인증서 폐기시 요청할 DNS - 블록체인에서는 SmartContract)
-                GeneralName gn = new GeneralName(GeneralName.dNSName, "");
+                //CRL(Certificate Revocation List) 인증서 폐기여부 확인 가능한 도메인을 입력한 후에 인증 요청이 오면 해당 서버를 통하여 폐기여부 검증.(블록체인에서는 Smart Contract 주소입력)
+                GeneralName gn = new GeneralName(GeneralName.dNSName, "Certificate Revocation List");
                 GeneralNames gns = new GeneralNames(gn);
                 DistributionPointName dpn = new DistributionPointName(gns);
 
@@ -173,7 +269,7 @@ public class CertByECCUtil {
             cert.checkValidity(new Date());
 
             //Root CA의 publicKey로 검증
-            cert.verify(ECCUtil.generatePubStringToPubKey(clientCSR.getHexPublicKey()));
+            cert.verify(ECCUtil.generatePubStringToPubKey(rootCA.getHexPublicKey()));
 
             x509CSRRes = new X509CSRRes();
             x509CSRRes.setHex(Hex.encodeHexString(cert.getEncoded()));

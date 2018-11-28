@@ -20,7 +20,6 @@ public class X509CSRReq {
 
     //KR
     private String countryCode;
-    //조직명
     private String organization;
     //Service Provider 이름 또는 도메인
     private String organizationUtit;

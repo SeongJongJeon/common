@@ -75,7 +75,7 @@ public class ECCUtil {
     }
 
     /**
-     * public key로 서명값 검증
+     * public key 로 서명값 검증
      *
      * @param eccSigAlgorithm
      * @param plaintext
@@ -98,7 +98,7 @@ public class ECCUtil {
     }
 
     /**
-     * private key로 signature 생성
+     * private key 로 signature 생성
      *
      * @param eccSigAlgorithm
      * @param plainText
