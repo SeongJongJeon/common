@@ -20,12 +20,12 @@ public class TestCertByECDSAUtil {
         KeyPair keyPair = ECDSAUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
 
         RootCA rootCA = new RootCA();
-        rootCA.setRootHexPrivKey(ECDSAUtil.generateHexString(keyPair.getPrivate().getEncoded()));
-        rootCA.setHexPublicKey(ECDSAUtil.generateHexString(keyPair.getPublic().getEncoded()));
+        rootCA.setRootHexPrivKey(HexUtil.encodeString(keyPair.getPrivate().getEncoded()));
+        rootCA.setHexPublicKey(HexUtil.encodeString(keyPair.getPublic().getEncoded()));
 
         X509CSRReq x509CSRReq = new X509CSRReq();
         x509CSRReq.setEccSigAlgorithm(CryptoUtil.ECCSigAlgorithm.SHA256);
-        x509CSRReq.setHexPublicKey(ECDSAUtil.generateHexString(keyPair.getPublic().getEncoded()));
+        x509CSRReq.setHexPublicKey(HexUtil.encodeString(keyPair.getPublic().getEncoded()));
         x509CSRReq.setCn("www.common.com");
         x509CSRReq.setCountryCode("KR");
         x509CSRReq.setOrganization("Common");
@@ -44,7 +44,7 @@ public class TestCertByECDSAUtil {
 
         x509CSRReq = new X509CSRReq();
         x509CSRReq.setEccSigAlgorithm(CryptoUtil.ECCSigAlgorithm.SHA256);
-        x509CSRReq.setHexPublicKey(ECDSAUtil.generateHexString(keyPair.getPublic().getEncoded()));
+        x509CSRReq.setHexPublicKey(HexUtil.encodeString(keyPair.getPublic().getEncoded()));
         x509CSRReq.setCn("전성종");
         x509CSRReq.setCountryCode("KR");
         x509CSRReq.setOrganization("Soul");
@@ -59,7 +59,7 @@ public class TestCertByECDSAUtil {
         String plainText = "아이고야!";
         AuthenticationReq authenticationReq = new AuthenticationReq();
         authenticationReq.setPlainText(plainText);
-        authenticationReq.setCipherText(ECDSAUtil.signature(CryptoUtil.ECCSigAlgorithm.SHA256, plainText, ECDSAUtil.generateHexString(keyPair.getPrivate().getEncoded())));   //서명
+        authenticationReq.setCipherText(ECDSAUtil.signature(CryptoUtil.ECCSigAlgorithm.SHA256, plainText, HexUtil.encodeString(keyPair.getPrivate().getEncoded())));   //서명
         authenticationReq.setPem(x509CSRRes.getPem());
 
         String crl = CertByECCUtil.extractCertificateRevocationList(authenticationReq.getPem(), true);  //인증서 폐기목록 추출 (해당 정보를 통하여 인증서 폐기여부를 조회해야 함.)

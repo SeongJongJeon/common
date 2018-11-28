@@ -11,8 +11,8 @@ public class TestECDSAUtil {
     @Test
     public void signatureWithVerification() {
         KeyPair keyPair = ECDSAUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
-        String hexPrivKey = ECDSAUtil.generateHexString(keyPair.getPrivate().getEncoded());
-        String hexPubKey = ECDSAUtil.generateHexString(keyPair.getPublic().getEncoded());
+        String hexPrivKey = HexUtil.encodeString(keyPair.getPrivate().getEncoded());
+        String hexPubKey = HexUtil.encodeString(keyPair.getPublic().getEncoded());
 
         String sig = ECDSAUtil.signature(CryptoUtil.ECCSigAlgorithm.SHA256, "아이고~", hexPrivKey);
         boolean isSuccess = ECDSAUtil.verifySignature(CryptoUtil.ECCSigAlgorithm.SHA256, "아이고~", sig, hexPubKey);

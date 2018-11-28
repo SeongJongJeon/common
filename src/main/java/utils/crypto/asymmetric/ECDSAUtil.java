@@ -1,6 +1,5 @@
 package utils.crypto.asymmetric;
 
-import org.apache.commons.codec.binary.Hex;
 import org.bouncycastle.asn1.sec.SECNamedCurves;
 import org.bouncycastle.asn1.x9.X9ECParameters;
 import org.bouncycastle.crypto.params.ECDomainParameters;
@@ -8,6 +7,7 @@ import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.math.ec.ECPoint;
 import utils.crypto.CryptoUtil;
+import utils.crypto.HexUtil;
 import utils.crypto.ShaUtil;
 
 import java.security.*;
@@ -75,17 +75,7 @@ public class ECDSAUtil {
         byte[] copy = new byte[shaData.length - from];
         System.arraycopy(shaData, from, copy, 0, shaData.length - from);
 
-        return generateHexString(copy);
-    }
-
-    /**
-     * PrivateKey 또는 PublicKey 값을 HexString으로 변환
-     *
-     * @param data
-     * @return
-     */
-    public static String generateHexString(byte[] data) {
-        return Hex.encodeHexString(data);
+        return HexUtil.encodeString(copy);
     }
 
     /**
@@ -98,7 +88,7 @@ public class ECDSAUtil {
         PrivateKey privateKey = null;
         try {
             KeyFactory fact = KeyFactory.getInstance("EC");
-            privateKey = fact.generatePrivate(new PKCS8EncodedKeySpec(Hex.decodeHex(privateString.toCharArray())));
+            privateKey = fact.generatePrivate(new PKCS8EncodedKeySpec(HexUtil.decodeHex(privateString.toCharArray())));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -115,7 +105,7 @@ public class ECDSAUtil {
         PublicKey publicKey = null;
         try {
             KeyFactory fact = KeyFactory.getInstance("EC");
-            publicKey = fact.generatePublic(new X509EncodedKeySpec(Hex.decodeHex(pubString.toCharArray())));
+            publicKey = fact.generatePublic(new X509EncodedKeySpec(HexUtil.decodeHex(pubString.toCharArray())));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -138,7 +128,7 @@ public class ECDSAUtil {
             Signature sig = Signature.getInstance(eccSigAlgorithm.toValue());
             sig.initVerify(publicKey);
             sig.update(plaintext.getBytes());
-            isVerify = sig.verify(Hex.decodeHex(signature.toCharArray()));
+            isVerify = sig.verify(HexUtil.decodeHex(signature.toCharArray()));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -164,6 +154,6 @@ public class ECDSAUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return Hex.encodeHexString(signature);
+        return HexUtil.encodeString(signature);
     }
 }
