@@ -32,6 +32,7 @@ public class ECDSAUtil {
     public static KeyPair generateKey(CryptoUtil.ECCAlgorithm eccAlgorithm) {
         try {
             SecureRandom secureRandom = new SecureRandom();
+            //EC, ECDSA, ECDH 모두 동일함
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
             keyPairGenerator.initialize(new ECGenParameterSpec(eccAlgorithm.toValue()), secureRandom);
             return keyPairGenerator.generateKeyPair();
