@@ -1,10 +1,17 @@
 package utils.crypto.asymmetric;
 
 import org.apache.commons.codec.binary.Hex;
+import org.bouncycastle.asn1.sec.SECNamedCurves;
+import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.crypto.params.ECDomainParameters;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.math.ec.ECPoint;
 import utils.crypto.CryptoUtil;
+import utils.crypto.ShaUtil;
 
 import java.security.*;
+import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -21,13 +28,50 @@ public class ECCUtil {
 
     public static KeyPair generateKey(CryptoUtil.ECCAlgorithm eccAlgorithm) {
         try {
+            SecureRandom secureRandom = new SecureRandom();
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
-            keyPairGenerator.initialize(new ECGenParameterSpec(eccAlgorithm.toValue()));
+            keyPairGenerator.initialize(new ECGenParameterSpec(eccAlgorithm.toValue()), secureRandom);
             return keyPairGenerator.generateKeyPair();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    /**
+     * PubKey의 Curve x point 로부터 계정의 주소값을 추출하기 위해 사용함.
+     *
+     * @param pubKey
+     * @param eccAlgorithm
+     * @return
+     */
+    public static ECPoint generateECPoint(PublicKey pubKey, CryptoUtil.ECCAlgorithm eccAlgorithm) {
+        if (pubKey instanceof BCECPublicKey) {
+            return ((BCECPublicKey) pubKey).getQ();
+        } else if (pubKey instanceof ECPublicKey) {
+            X9ECParameters params = SECNamedCurves.getByName(eccAlgorithm.toValue());
+            ECDomainParameters curve = new ECDomainParameters(params.getCurve(), params.getG(), params.getN(), params.getH());
+
+            java.security.spec.ECPoint publicPointW = ((ECPublicKey) pubKey).getW();
+
+            return curve.getCurve().createPoint(publicPointW.getAffineX(), publicPointW.getAffineY());
+        }
+        return null;
+    }
+
+    /**
+     * PubKey 로부터 sha256 변환뒤 뒤의 20자리를 hex 값으로 변환하여 리턴
+     *
+     * @param pubKey
+     * @return
+     */
+    public static String getHexOfPubKey(byte[] pubKey) {
+        int from = 12;
+        byte[] shaData = ShaUtil.sha256(pubKey);
+        byte[] copy = new byte[shaData.length - from];
+        System.arraycopy(shaData, from, copy, 0, shaData.length - from);
+
+        return generateHexString(copy);
     }
 
     /**

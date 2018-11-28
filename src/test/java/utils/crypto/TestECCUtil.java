@@ -14,12 +14,10 @@ public class TestECCUtil {
         String hexPrivKey = ECCUtil.generateHexString(keyPair.getPrivate().getEncoded());
         String hexPubKey = ECCUtil.generateHexString(keyPair.getPublic().getEncoded());
 
-
-        System.out.println(keyPair.getPublic().getEncoded().length + " : " + hexPubKey);
-        System.out.println(keyPair.getPublic().getAlgorithm());
-
         String sig = ECCUtil.signature(CryptoUtil.ECCSigAlgorithm.SHA256, "아이고~", hexPrivKey);
         boolean isSuccess = ECCUtil.verifySignature(CryptoUtil.ECCSigAlgorithm.SHA256, "아이고~", sig, hexPubKey);
         assertEquals(true, isSuccess);
+
+        System.out.println(ECCUtil.getHexOfPubKey(keyPair.getPublic().getEncoded()));
     }
 }
