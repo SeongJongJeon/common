@@ -1,6 +1,7 @@
 package utils.crypto.asymmetric;
 
 import lombok.extern.slf4j.Slf4j;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.crypto.KeyAgreement;
 import java.security.PrivateKey;
@@ -19,6 +20,8 @@ import java.security.PublicKey;
  */
 @Slf4j
 public class ECDHUtil {
+    private static final String provider = BouncyCastleProvider.PROVIDER_NAME;
+
     /**
      * 자신의 Private Key로 다른 사람이 전송한 Public Key를 동의한다.
      *
@@ -27,7 +30,7 @@ public class ECDHUtil {
     public static byte[] generateSharedSecret(PrivateKey privKey, PublicKey otherPublicKey) {
         try {
             //자신의 Private Key로 다른 사람이 전송한 Public Key를 동의한다.
-            KeyAgreement ka = KeyAgreement.getInstance("ECDH");
+            KeyAgreement ka = KeyAgreement.getInstance("ECDH", provider);
             ka.init(privKey);
             ka.doPhase(otherPublicKey, true);
 

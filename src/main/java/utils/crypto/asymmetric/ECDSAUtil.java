@@ -29,6 +29,8 @@ import java.security.spec.X509EncodedKeySpec;
  */
 @Slf4j
 public class ECDSAUtil {
+    private static final String provider = BouncyCastleProvider.PROVIDER_NAME;
+
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
@@ -37,7 +39,7 @@ public class ECDSAUtil {
         try {
             SecureRandom secureRandom = new SecureRandom();
             //EC, ECDSA, ECDH 모두 동일함
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC", provider);
             keyPairGenerator.initialize(new ECGenParameterSpec(eccAlgorithm.toValue()), secureRandom);
             return keyPairGenerator.generateKeyPair();
         } catch (Exception e) {
@@ -91,7 +93,7 @@ public class ECDSAUtil {
     public static PrivateKey generatePrivateStringToPrivateKey(String privateString) {
         PrivateKey privateKey = null;
         try {
-            KeyFactory fact = KeyFactory.getInstance("EC");
+            KeyFactory fact = KeyFactory.getInstance("EC", provider);
             privateKey = fact.generatePrivate(new PKCS8EncodedKeySpec(HexUtil.decodeHex(privateString.toCharArray())));
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -108,7 +110,7 @@ public class ECDSAUtil {
     public static PublicKey generatePubStringToPubKey(String pubString) {
         PublicKey publicKey = null;
         try {
-            KeyFactory fact = KeyFactory.getInstance("EC");
+            KeyFactory fact = KeyFactory.getInstance("EC", provider);
             publicKey = fact.generatePublic(new X509EncodedKeySpec(HexUtil.decodeHex(pubString.toCharArray())));
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -150,7 +152,6 @@ public class ECDSAUtil {
     public static String signature(CryptoUtil.ECCSigAlgorithm eccSigAlgorithm, String plainText, String hexPrivateKey) {
         byte[] signature = null;
         try {
-            StringBuffer mStringBuffer = new StringBuffer();
             Signature sig = Signature.getInstance(eccSigAlgorithm.toValue());
             sig.initSign(generatePrivateStringToPrivateKey(hexPrivateKey));
             sig.update(plainText.getBytes());

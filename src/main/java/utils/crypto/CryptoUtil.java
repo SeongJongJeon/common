@@ -42,9 +42,9 @@ public class CryptoUtil {
     }
 
     public enum ECCAlgorithm {
-        SMALL("secp128r1"),
-        MEDIUM("secp256r1"),
-        LARGE("secp512r1");
+        SMALL("secp128k1"),
+        MEDIUM("secp256k1"),
+        LARGE("secp512k1");
 
         private String value;
 
@@ -55,11 +55,11 @@ public class CryptoUtil {
         @JsonCreator
         public static ECCAlgorithm fromValue(String value) {
             switch (value) {
-                case "secp128r1":
+                case "secp128k1":
                     return SMALL;
-                case "secp256r1":
+                case "secp256k1":
                     return MEDIUM;
-                case "secp512r1":
+                case "secp512k1":
                     return LARGE;
             }
             return SMALL;

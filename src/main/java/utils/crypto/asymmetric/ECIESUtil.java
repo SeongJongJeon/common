@@ -22,9 +22,11 @@ import static utils.crypto.CryptoUtil.CHAR_SET;
  */
 @Slf4j
 public class ECIESUtil {
+    private static final String provider = BouncyCastleProvider.PROVIDER_NAME;
+
     public static String encrypt(PublicKey publicKeyOfReceiver, String plainText) {
         try {
-            Cipher cipher = Cipher.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
+            Cipher cipher = Cipher.getInstance("ECIES", provider);
             cipher.init(Cipher.ENCRYPT_MODE, publicKeyOfReceiver);
             return Base64Util.encode(cipher.doFinal(plainText.getBytes(CHAR_SET)));
         } catch (Exception e) {
@@ -37,7 +39,7 @@ public class ECIESUtil {
         try {
             byte[] cipherText = Base64Util.decode(base64CipherText);
 
-            Cipher cipher = Cipher.getInstance("ECIES", BouncyCastleProvider.PROVIDER_NAME);
+            Cipher cipher = Cipher.getInstance("ECIES", provider);
             cipher.init(Cipher.DECRYPT_MODE, privKey);
             return new String(cipher.doFinal(cipherText), CHAR_SET);
         } catch (Exception e) {
