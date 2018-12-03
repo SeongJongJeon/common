@@ -17,7 +17,7 @@ public class TestCertByECDSAUtil {
     @Test
     public void crs() {
         //Root CA 생성
-        KeyPair keyPair = ECDSAUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
+        KeyPair keyPair = ECDSAUtil.generateKey();
 
         RootCA rootCA = new RootCA();
         rootCA.setRootHexPrivKey(HexUtil.encodeString(keyPair.getPrivate().getEncoded()));
@@ -40,7 +40,7 @@ public class TestCertByECDSAUtil {
         rootCA.setRootCertHex(x509CSRRes.getHex());
 
         //Client 인증서 생성
-        keyPair = ECDSAUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
+        keyPair = ECDSAUtil.generateKey();
 
         x509CSRReq = new X509CSRReq();
         x509CSRReq.setEccSigAlgorithm(CryptoUtil.ECCSigAlgorithm.SHA256);

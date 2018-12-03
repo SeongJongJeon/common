@@ -41,41 +41,6 @@ public class CryptoUtil {
         }
     }
 
-    public enum ECCAlgorithm {
-        SMALL("secp128k1"),
-        MEDIUM("secp256k1"),
-        LARGE("secp512k1");
-
-        private String value;
-
-        ECCAlgorithm(String value) {
-            this.value = value;
-        }
-
-        @JsonCreator
-        public static ECCAlgorithm fromValue(String value) {
-            switch (value) {
-                case "secp128k1":
-                    return SMALL;
-                case "secp256k1":
-                    return MEDIUM;
-                case "secp512k1":
-                    return LARGE;
-            }
-            return SMALL;
-        }
-
-        /**
-         * Use serialize
-         *
-         * @return
-         */
-        @JsonValue
-        public String toValue() {
-            return this.value;
-        }
-    }
-
     public enum ECCSigAlgorithm {
         SHA128("SHA1withECDSA"),
         SHA256("SHA256withECDSA"),

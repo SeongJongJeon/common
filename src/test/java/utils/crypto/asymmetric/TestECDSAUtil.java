@@ -3,17 +3,16 @@ package utils.crypto.asymmetric;
 import org.junit.Test;
 import utils.crypto.CryptoUtil;
 import utils.crypto.HexUtil;
-import utils.crypto.ShaUtil;
 
+import java.math.BigInteger;
 import java.security.KeyPair;
-import java.security.PublicKey;
 
 import static org.junit.Assert.assertEquals;
 
 public class TestECDSAUtil {
     @Test
     public void signatureWithVerification() {
-        KeyPair keyPair = ECDSAUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
+        KeyPair keyPair = ECDSAUtil.generateKey();
         String hexPrivKey = HexUtil.encodeString(keyPair.getPrivate().getEncoded());
         String hexPubKey = HexUtil.encodeString(keyPair.getPublic().getEncoded());
 
@@ -24,9 +23,23 @@ public class TestECDSAUtil {
         System.out.println(ECDSAUtil.getHexOfPubKey(keyPair.getPublic().getEncoded()));
     }
 
+    /**
+     * ref. https://github.com/web3j/web3j/blob/master/crypto/src/main/java/org/web3j/crypto/ECKeyPair.java
+     */
     @Test
     public void recoverPubKeyFromSig() {
-        /*KeyPair keyPair = ECDSAUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
+        String plainText = "test 1";
+        KeyPair keyPair = ECDSAUtil.generateKey();
+        String hexPrivKey = HexUtil.encodeString(keyPair.getPrivate().getEncoded());
+        String hexPubKey = HexUtil.encodeString(keyPair.getPublic().getEncoded());
+
+        BigInteger[] rs = ECDSAUtil.signatureToRS(plainText, hexPrivKey);
+        System.out.println(rs[0]);
+        System.out.println(rs[1]);
+//        BigInteger privKey = ((BCECPrivateKey) keyPair.getPrivate()).getD();
+//        byte[] publicKeyBytes = ((BCECPublicKey) keyPair.getPublic()).getQ().getEncoded(false);
+//        BigInteger pubKey = new BigInteger(1, Arrays.copyOfRange(publicKeyBytes, 1, publicKeyBytes.length));
+        /*
         String hexPrivKey = HexUtil.encodeString(keyPair.getPrivate().getEncoded());
         String hexPubKey = HexUtil.encodeString(keyPair.getPublic().getEncoded());
 

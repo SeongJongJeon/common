@@ -1,7 +1,6 @@
 package utils.crypto.asymmetric;
 
 import org.junit.Test;
-import utils.crypto.CryptoUtil;
 
 import java.security.KeyPair;
 
@@ -11,7 +10,7 @@ public class TestECIESUtil {
     @Test
     public void encryptWithDecrypt() {
         String plainText = "하하ㅏ";
-        KeyPair keyPair = ECDSAUtil.generateKey(CryptoUtil.ECCAlgorithm.MEDIUM);
+        KeyPair keyPair = ECDSAUtil.generateKey();
         String cipherText = ECIESUtil.encrypt(keyPair.getPublic(), plainText);
         String originText = ECIESUtil.decrypt(keyPair.getPrivate(), cipherText);
 

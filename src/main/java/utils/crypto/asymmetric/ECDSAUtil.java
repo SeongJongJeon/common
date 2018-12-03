@@ -3,7 +3,13 @@ package utils.crypto.asymmetric;
 import lombok.extern.slf4j.Slf4j;
 import org.bouncycastle.asn1.sec.SECNamedCurves;
 import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.crypto.digests.SHA256Digest;
+import org.bouncycastle.crypto.ec.CustomNamedCurves;
 import org.bouncycastle.crypto.params.ECDomainParameters;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
+import org.bouncycastle.crypto.signers.ECDSASigner;
+import org.bouncycastle.crypto.signers.HMacDSAKCalculator;
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPrivateKey;
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.math.ec.ECPoint;
@@ -11,6 +17,7 @@ import utils.crypto.CryptoUtil;
 import utils.crypto.HexUtil;
 import utils.crypto.ShaUtil;
 
+import java.math.BigInteger;
 import java.security.*;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.ECGenParameterSpec;
@@ -29,20 +36,28 @@ import java.security.spec.X509EncodedKeySpec;
  */
 @Slf4j
 public class ECDSAUtil {
-    private static final String provider = BouncyCastleProvider.PROVIDER_NAME;
+    private static final String PROVIDER = BouncyCastleProvider.PROVIDER_NAME;
+    //bouncycastle에서는 다음의 3가지를 지원함. secp256r1, secp128k1
+    //secp256k1 보다 secp256r1 알고리즘이 좀더 안전하다고 함. (이더리움 및 비트코인은 secp256k1 사용)
+    private static final String ECC_ALGORITHM = "secp256k1";
+
+    public static final X9ECParameters CURVE_PARAMS = CustomNamedCurves.getByName("secp256k1");
+    static final ECDomainParameters CURVE = new ECDomainParameters(CURVE_PARAMS.getCurve(), CURVE_PARAMS.getG(), CURVE_PARAMS.getN(), CURVE_PARAMS.getH());
+    static final BigInteger HALF_CURVE_ORDER = CURVE_PARAMS.getN().shiftRight(1);
 
     static {
         Security.addProvider(new BouncyCastleProvider());
     }
 
-    public static KeyPair generateKey(CryptoUtil.ECCAlgorithm eccAlgorithm) {
+    public static KeyPair generateKey() {
         try {
             SecureRandom secureRandom = new SecureRandom();
             //EC, ECDSA, ECDH 모두 동일함
-            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC", provider);
-            keyPairGenerator.initialize(new ECGenParameterSpec(eccAlgorithm.toValue()), secureRandom);
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC", PROVIDER);
+            keyPairGenerator.initialize(new ECGenParameterSpec(ECC_ALGORITHM), secureRandom);
             return keyPairGenerator.generateKeyPair();
         } catch (Exception e) {
+            e.printStackTrace();
             log.error(e.getMessage());
         }
         return null;
@@ -52,14 +67,13 @@ public class ECDSAUtil {
      * PubKey의 Curve x point 로부터 계정의 주소값을 추출하기 위해 사용함.
      *
      * @param pubKey
-     * @param eccAlgorithm
      * @return
      */
-    public static ECPoint generateECPoint(PublicKey pubKey, CryptoUtil.ECCAlgorithm eccAlgorithm) {
+    public static ECPoint generateECPoint(PublicKey pubKey) {
         if (pubKey instanceof BCECPublicKey) {
             return ((BCECPublicKey) pubKey).getQ();
         } else if (pubKey instanceof ECPublicKey) {
-            X9ECParameters params = SECNamedCurves.getByName(eccAlgorithm.toValue());
+            X9ECParameters params = SECNamedCurves.getByName(ECC_ALGORITHM);
             ECDomainParameters curve = new ECDomainParameters(params.getCurve(), params.getG(), params.getN(), params.getH());
 
             java.security.spec.ECPoint publicPointW = ((ECPublicKey) pubKey).getW();
@@ -93,7 +107,7 @@ public class ECDSAUtil {
     public static PrivateKey generatePrivateStringToPrivateKey(String privateString) {
         PrivateKey privateKey = null;
         try {
-            KeyFactory fact = KeyFactory.getInstance("EC", provider);
+            KeyFactory fact = KeyFactory.getInstance("EC", PROVIDER);
             privateKey = fact.generatePrivate(new PKCS8EncodedKeySpec(HexUtil.decodeHex(privateString.toCharArray())));
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -110,7 +124,7 @@ public class ECDSAUtil {
     public static PublicKey generatePubStringToPubKey(String pubString) {
         PublicKey publicKey = null;
         try {
-            KeyFactory fact = KeyFactory.getInstance("EC", provider);
+            KeyFactory fact = KeyFactory.getInstance("EC", PROVIDER);
             publicKey = fact.generatePublic(new X509EncodedKeySpec(HexUtil.decodeHex(pubString.toCharArray())));
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -145,7 +159,7 @@ public class ECDSAUtil {
      * private key 로 signature 생성
      *
      * @param eccSigAlgorithm
-     * @param plainText
+     * @param plainText       내부적으로 Sha256으로 해시
      * @param hexPrivateKey
      * @return
      */
@@ -154,11 +168,42 @@ public class ECDSAUtil {
         try {
             Signature sig = Signature.getInstance(eccSigAlgorithm.toValue());
             sig.initSign(generatePrivateStringToPrivateKey(hexPrivateKey));
-            sig.update(plainText.getBytes());
+            sig.update(ShaUtil.sha256(plainText));
             signature = sig.sign();
         } catch (Exception e) {
             log.error(e.getMessage());
         }
         return HexUtil.encodeString(signature);
     }
+
+    /**
+     * private key 로 signature 생성 (메시지 서명의 결과 R,S 리턴)
+     *
+     * @param plainText     내부적으로 Sha256으로 해시
+     * @param hexPrivateKey
+     * @return
+     */
+    public static BigInteger[] signatureToRS(String plainText, String hexPrivateKey) {
+        BigInteger[] components = null;
+        try {
+            BCECPrivateKey privateKey = (BCECPrivateKey) generatePrivateStringToPrivateKey(hexPrivateKey);
+
+            ECDSASigner signer = new ECDSASigner(new HMacDSAKCalculator(new SHA256Digest()));
+            ECPrivateKeyParameters privKey = new ECPrivateKeyParameters(privateKey.getD(), CURVE);
+            signer.init(true, privKey);
+            components = signer.generateSignature(ShaUtil.sha256(plainText));
+
+            BigInteger s = components[1];
+            if (s.compareTo(HALF_CURVE_ORDER) <= 0) {
+                components[1] = CURVE.getN().subtract(s);
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+        return components;
+    }
+
+//    public static BigInteger recoverFromSignature(int recId, ECDSASignature sig, byte[] message) {
+//
+//    }
 }
