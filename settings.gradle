@@ -1,2 +1,6 @@
-rootProject.name = 'alex'
+rootProject.name = 'common'
+include 'core'
+include 'web'
+include 'web:common-web'
+findProject(':web:common-web')?.name = 'common-web'
 

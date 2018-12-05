@@ -1,0 +1,21 @@
+jar {
+    baseName = 'common-core'
+}
+
+dependencies {
+    /* Json */
+    compile "com.fasterxml.jackson.core:jackson-core"
+    compile "com.fasterxml.jackson.core:jackson-annotations"
+    compile "com.fasterxml.jackson.core:jackson-databind"
+    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider"
+    
+    /* Crypto */
+    compile "org.bouncycastle:bcprov-jdk15on:1.60"
+    compile "org.bouncycastle:bcpkix-jdk15on:1.60"
+
+    /* Utils */
+    //Base64
+    compile "commons-codec:commons-codec:1.11"
+    //File
+    compile "commons-io:commons-io:2.6"
+}

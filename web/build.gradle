@@ -1,0 +1,16 @@
+buildscript {
+    repositories { jcenter() }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${project.ext.springBootVersion}")
+    }
+}
+
+subprojects {
+    apply plugin: 'org.springframework.boot'
+
+    def projectName = it.name;
+
+    dependencies {
+        compile "org.springframework.boot:spring-boot-starter-test"
+    }
+}

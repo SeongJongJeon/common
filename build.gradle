@@ -1,50 +1,119 @@
-plugins {
-    id 'java'
-}
+buildscript {
+    repositories {
+        jcenter()
+    }
 
-group 'com.example'
-version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
-}
-
-apply plugin: 'groovy'
-apply plugin: 'idea'
-
-idea {
-    module {
-        sourceDirs += file("${projectDir}/src/main/groovy")
+    dependencies {
+        //Spring Boot 버젼을 기입하지 않으면 해당 Management 에서 관리되는 버젼으로 사용됨. (dependencyManagement 섹션에 정의된 버젼을 사용하게 됨)
+        //ref. https://docs.spring.io/dependency-management-plugin/docs/current-SNAPSHOT/reference/html5/
+        classpath 'io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE'
+        classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:4.0.1'
     }
 }
 
-dependencies {
-    def jacksonVersion = '2.9.6'
-    def slf4jVersion = '1.7.25'
-    
-    testCompile group: 'junit', name: 'junit', version: '4.12'
-    testCompile 'org.spockframework:spock-core:1.2-groovy-2.5'
+allprojects {
+    apply plugin: 'java'
+    apply plugin: 'groovy'
+    apply plugin: 'idea'
+    apply plugin: 'io.spring.dependency-management'
 
-    compile "org.slf4j:slf4j-api:$slf4jVersion"
-    compile "org.projectlombok:lombok:1.16.20"
+    group 'com.example'
+    version '1.0-SNAPSHOT'
 
-    /* Json */
-    compile "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
-    compile "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
-    compile "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    compile "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:$jacksonVersion"
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
-    /* Crypto */
-    //The Bouncy Castle Crypto package is a Java implementation of cryptographic algorithm
-    compile("org.bouncycastle:bcprov-jdk15on:1.60")
-    //The Bouncy Castle Java APIs for CMS, PKCS, EAC, TSP, CMP, CRMF, OCSP, and certificate generation. This jar contains APIs for JDK 1.5 to JDK 1.8. The APIs can be used in conjunction with a JCE/JCA provider such as the one provided with the Bouncy Castle Cryptography APIs.
-    compile("org.bouncycastle:bcpkix-jdk15on:1.60")
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+        options.compilerArgs += ["-Xlint:deprecation", "-Xlint:unchecked"]
+    }
 
-    /* Base64 */
-    compile("commons-codec:commons-codec:1.11")
+    idea {
+        module {
+            inheritOutputDirs = false
+            outputDir = file("$buildDir/classes/main/")
+            testOutputDir = file("$buildDir/classes/test")
+        }
+    }
 
-    /* File */
-    compile("commons-io:commons-io:2.6")
+    if (project.convention.findPlugin(JavaPluginConvention)) {
+        sourceSets.main.java.outputDir = new File(buildDir, "classes/main")
+        sourceSets.main.output.resourcesDir = new File(buildDir, "classes/main")
+        sourceSets.test.java.outputDir = new File(buildDir, "classes/test")
+        sourceSets.test.output.resourcesDir = new File(buildDir, "classes/test")
+    }
+
+    configurations { providedCompile }
+
+    sourceSets.main.compileClasspath += configurations.providedCompile
+    sourceSets.test.compileClasspath += configurations.providedCompile
+    sourceSets.test.runtimeClasspath += configurations.providedCompile
+
+    sourceSets {
+        main {
+            resources {
+                srcDirs = ["src/main/config", "src/main/resources"]
+                includes = ["**/*"]
+            }
+        }
+    }
+
+    buildscript {
+        project.ext {
+            springBootVersion = '2.1.1.RELEASE'
+            querydslVersion = '3.7.4'
+            c3p0Version = '0.9.5.2'
+        }
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencyManagement {
+        testCompile {
+            dependencies {
+                dependencySet(group: 'org.spockframework', version: '1.2-groovy-2.5') {
+                    entry 'spock-core'
+                    entry 'spock-spring'
+                }
+            }
+        }
+
+        dependencies {
+            def jacksonVersion = '2.9.7'
+            dependency "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:${jacksonVersion}"
+            dependencySet(group: 'com.fasterxml.jackson.core', version: "${jacksonVersion}") {
+                entry 'jackson-jaxrs-json-provider'
+                entry 'jackson-core'
+                entry 'jackson-annotations'
+                entry 'jackson-databind'
+            }
+            
+            dependencySet(group: 'org.slf4j', version: '1.7.25') {
+                entry 'slf4j-api'
+                entry 'slf4j-simple'
+            }
+
+            dependencySet(group: 'io.springfox', version: '2.9.2') {
+                entry 'io.springfox:springfox-swagger2'
+                entry 'io.springfox:springfox-swagger-ui'
+            }
+        }
+
+        imports {
+            mavenBom("org.springframework.boot:spring-boot-dependencies:${project.ext.springBootVersion}")
+        }
+    }
+
+    dependencies {
+        testCompile "junit:junit:4.12"
+        testCompile "org.spockframework:spock-core"
+        testCompile "org.spockframework:spock-spring"
+
+        compile "org.slf4j:slf4j-api"
+        compile "org.slf4j:slf4j-api"
+
+        compile "org.projectlombok:lombok:1.18.4"
+    }
 }
