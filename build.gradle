@@ -11,6 +11,15 @@ repositories {
     mavenCentral()
 }
 
+apply plugin: 'groovy'
+apply plugin: 'idea'
+
+idea {
+    module {
+        sourceDirs += file("${projectDir}/src/main/groovy")
+    }
+}
+
 dependencies {
     def jacksonVersion = '2.9.6'
     def slf4jVersion = '1.7.25'

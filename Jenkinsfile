@@ -1,10 +1,10 @@
+#!/usr/bin/env groovy
+
 pipeline {
     agent any
     stages {
-        stage('Stage 1') {
-            steps {
-                echo 'Hello world!2'
-            }
+        stage('Test1') {
+            println "Hello world"
         }
     }
 }
