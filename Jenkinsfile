@@ -4,7 +4,7 @@ pipeline {
     agent any
     stages {
         stage('Test1') {
-            println "Hello world"
+            echo "Hello world"
         }
     }
 }
