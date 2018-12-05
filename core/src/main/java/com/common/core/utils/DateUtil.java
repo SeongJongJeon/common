@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 
 public class DateUtil {
     //ZoneId.of("UTC")
@@ -24,6 +26,11 @@ public class DateUtil {
 
     public static LocalTime getLocalTime(int hour, int minute, int second, int nanoOfSecond) {
         return LocalTime.of(hour, minute, second, nanoOfSecond);
+    }
+
+    public static long getMicroSecond() {
+        //Last three digit is dirty data (*= 1000)
+        return TimeUnit.MILLISECONDS.toMicros(System.currentTimeMillis());
     }
 
     /**
