@@ -42,7 +42,6 @@ public class SystemUtil {
             }
         } catch (IOException e) {
             log.warn(String.format("mag:%s, trace:%s", e.getMessage(), ExceptionUtil.generateStackTraceToString(e)));
-            hostname = "";
         }
         return hostname;
     }
