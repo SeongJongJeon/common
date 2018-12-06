@@ -7,8 +7,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 
-import javax.sql.DataSource;
-
 public class DefaultDsConfig {
     @Autowired
     protected Environment environment;
@@ -35,7 +33,7 @@ public class DefaultDsConfig {
 
     @Primary
     @Bean(destroyMethod = "close")
-    public DataSource dataSource() throws Exception {
+    public ComboPooledDataSource dataSource() throws Exception {
         ComboPooledDataSource dataSource = new ComboPooledDataSource();
         dataSource.setJdbcUrl(environment.getRequiredProperty("db.master.url"));
         dataSource.setUser(environment.getRequiredProperty("db.master.user"));

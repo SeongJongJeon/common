@@ -1,6 +1,7 @@
 package com.common.web.common.utils;
 
 
+import com.common.web.common.dto.ServletReqDto;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
@@ -191,5 +192,14 @@ public class HttpServletUtil {
         }
 
         return val;
+    }
+
+    public static ServletReqDto extractServletRequest(HttpServletRequest req) {
+        ServletReqDto servletReqDto = new ServletReqDto();
+        servletReqDto.setClientIP(getClientIp(req));
+        servletReqDto.setLanguage(getLanguage(req));
+        servletReqDto.setCookies(generateCookieToMap(req.getCookies()));
+
+        return servletReqDto;
     }
 }

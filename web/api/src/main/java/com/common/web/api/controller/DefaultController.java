@@ -1,5 +1,7 @@
 package com.common.web.api.controller;
 
+import com.common.web.common.dto.ServletReqDto;
+import com.common.web.common.utils.HttpServletUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.stereotype.Controller;
@@ -24,11 +26,10 @@ public class DefaultController {
         return "redirect:/swagger-ui.html";
     }
 
-    @ApiOperation(value = "Check infomation of client")
+    @ApiOperation(value = "Check information of client")
     @RequestMapping(value = "/checkClientInfo", method = {RequestMethod.GET})
     @ResponseBody
-    public String checkClientInfo(HttpServletRequest req, HttpServletResponse res) {
-
-        return "success";
+    public ServletReqDto checkClientInfo(HttpServletRequest req, HttpServletResponse res) {
+        return HttpServletUtil.extractServletRequest(req);
     }
 }
