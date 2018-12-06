@@ -1,6 +1,8 @@
-rootProject.name = 'common'
+rootProject.name = 'Example'
 include 'core'
 include 'web'
-include 'web:common-web'
-findProject(':web:common-web')?.name = 'common-web'
+include 'web:common'
+findProject(':web:common')?.name = 'common'
+include 'web:api'
+findProject(':web:api')?.name = 'api'
 

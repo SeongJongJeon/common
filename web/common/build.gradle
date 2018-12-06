@@ -1,0 +1,9 @@
+jar {
+    baseName = 'common'
+}
+
+dependencies {
+    compile project(':core')
+    
+    testCompile("org.springframework.boot:spring-boot-starter-test:$project.ext.springBootVersion")
+}

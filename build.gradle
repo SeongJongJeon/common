@@ -96,8 +96,8 @@ allprojects {
             }
 
             dependencySet(group: 'io.springfox', version: '2.9.2') {
-                entry 'io.springfox:springfox-swagger2'
-                entry 'io.springfox:springfox-swagger-ui'
+                entry 'springfox-swagger2'
+                entry 'springfox-swagger-ui'
             }
         }
 
