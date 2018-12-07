@@ -24,7 +24,7 @@ public class SiteMain {
 
         new SpringApplicationBuilder(SiteMain.class)
                 .properties(
-                        String.format("spring.config.location:classpath:core-%s.yml", env, env)
+                        String.format("spring.config.location:classpath:core-%s.yml,classpath:site-%s.yml", env, env)
                 )
                 .build()
                 .run(args);

@@ -1,0 +1,3 @@
+spring:
+  profiles:
+    include: console-logging,file-logging

@@ -4,6 +4,7 @@ import com.common.web.common.handler.FreemarkerExceptionHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactory;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -65,8 +66,8 @@ public class CommonViewWebConfig implements WebMvcConfigurer {
     @Bean
     public MultipartConfigElement multipartConfigElement() {
         org.springframework.boot.web.servlet.MultipartConfigFactory factory = new org.springframework.boot.web.servlet.MultipartConfigFactory();
-        factory.setMaxFileSize(-1);
-//		factory.setMaxRequestSize(getMaxUploadFileSize());
+        factory.setMaxFileSize(DataSize.ofBytes(-1));
+        factory.setMaxRequestSize(DataSize.ofGigabytes(1));
         return factory.createMultipartConfig();
     }
 
