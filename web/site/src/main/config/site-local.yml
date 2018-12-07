@@ -1,3 +1,25 @@
 spring:
   profiles:
     include: console-logging
+
+db:
+  jdbc:
+    driver: com.mysql.jdbc.Driver
+  acquireIncrement: 3
+  maxStatements: 5000
+  acquireRetryAttempts: 30
+  maxIdleTime: 180  # 3minutes
+  maxConnectionAge: 3600  # 1hour
+  # timeout and testing
+  checkoutTimeout: 5000 # 5seconds
+  idleConnectionTestPeriod: 60
+  preferredTestQuery: SELECT 1
+  testConnectionOnCheckin: true
+  testConnectionOnCheckout: false
+
+  master:
+    url: jdbc:mysql://javaweb.iptime.org:3306/common
+    user: alex
+    pwd: sv098098
+    minPoolSize: 3
+    maxPoolSize: 10
