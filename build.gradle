@@ -15,22 +15,6 @@ buildscript {
     }
 }
 
-def generateEnvValue(values) {
-    def value = ''
-    if (values.size() < 2) {
-        return value
-    } else {
-        def i = 0
-        values.each {
-            if (i > 0) {
-                value += "${it}="
-            }
-            i++
-        }
-        value.substring(0, value.size() - 1)
-    }
-}
-
 allprojects {
     apply plugin: 'java'
     apply plugin: 'groovy'
@@ -86,40 +70,6 @@ allprojects {
             c3p0Version = '5.3.7.Final'
         }
     }
-
-    processResources {
-        File coreFile = new File("${project.getRootDir().path}/core/src/main/filter/${environment}.properties")
-        File file = new File("${project.projectDir.path}/src/main/filter/${environment}.properties")
-        println(environment);
-        def tokens = new HashMap()
-        if (coreFile.exists()) {
-            coreFile.eachLine { line ->
-                def values = line.tokenize("=")
-                if (!"".equals(line) && !values[0].startsWith("#") && "env".equals(values[0])) {
-                    tokens.put(values[0], generateEnvValue(values))
-                }
-            }
-        }
-
-        if (file.exists()) {
-            file.eachLine { line ->
-                def values = line.tokenize("=")
-                if (!"".equals(line) && !values[0].startsWith("#")) {
-                    tokens.put(values[0], generateEnvValue(values))
-
-                }
-            }
-        }
-
-        println "${project.getName()} - ${tokens} - ${environment}"
-        filesMatching('**/*.properties') {
-            filter ReplaceTokens, tokens: tokens
-        }
-        filesMatching('**/logback.xml') {
-            filter ReplaceTokens, tokens: tokens
-        }
-    }
-
 
     repositories {
         mavenCentral()
