@@ -5,4 +5,6 @@ include 'web:common'
 findProject(':web:common')?.name = 'common'
 include 'web:api'
 findProject(':web:api')?.name = 'api'
+include 'web:site'
+findProject(':web:site')?.name = 'site'
 

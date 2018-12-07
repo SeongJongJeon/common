@@ -1,5 +1,6 @@
 package com.common.web.api;
 
+import com.common.web.common.utils.FlagUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.connector.Connector;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,22 +30,6 @@ public class ApiMain {
     @Value("${core.env}")
     private String env;
 
-    public static String parseArguments(String[] args) {
-        String env = "local";
-        if (args.length > 0) {
-            switch (args[0]) {
-                case "dev":
-                    env = "dev";
-                    break;
-                case "prod":
-                    env = "prod";
-                    break;
-            }
-        }
-
-        return env;
-    }
-
     /**
      * yaml에서 설정한 컨테이너의 기본 port 변경
      */
@@ -72,7 +57,7 @@ public class ApiMain {
     }
 
     public static void main(String[] args) {
-        String env = parseArguments(args);
+        String env = FlagUtil.getEnvFromArgs(args);
 
         new SpringApplicationBuilder(ApiMain.class)
                 .properties(

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{req.xForwardedFor}] [%X{req.remoteHost}] [%X{req.requestURI}] [%thread] %-5level %logger{36}.%M\(%line\) - %msg%n
+            </pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILEOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/data/logs/cert-admin.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/data/logs/cert-admin.log_%d{yyyyMMdd}</fileNamePattern>
+            <maxHistory>60</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%X{req.xForwardedFor}] [%X{req.remoteHost}] [%X{req.requestURI}] [%thread] %-5level %logger{36}.%M\(%line\) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="org.apache.http.wire" level="OFF"/>
+    <logger name="org.apache.catalina.core.ContainerBase" level="OFF"/>
+    <logger name="org.apache.hadoop.conf.Configuration" level="WARN"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="com.mchange" level="WARN"/>
+    <logger name="com.ullink.slack.simpleslackapi" level="WARN"/>
+
+    <logger name="com.common" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <if condition='"@env@".equalsIgnoreCase("local")'>
+            <then>
+
+            </then>
+        </if>
+
+        <if condition='!"@env@".equalsIgnoreCase("local")'>
+            <then>
+                <appender-ref ref="FILEOUT"/>
+            </then>
+        </if>
+    </root>
+</configuration>

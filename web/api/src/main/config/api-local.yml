@@ -7,3 +7,7 @@ server:
     key-store-password: sv098098
     keyStoreType: PKCS12
     keyAlias: tomcat
+
+spring:
+  profiles:
+    include: console-logging
