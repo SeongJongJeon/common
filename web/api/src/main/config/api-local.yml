@@ -2,6 +2,7 @@ server:
   port: 8443
   ssl:
     enabled: true
+    protocol: TLS
     key-store: classpath:keystore.p12
     key-store-password: sv098098
     keyStoreType: PKCS12
