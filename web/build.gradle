@@ -1,17 +1,43 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
 buildscript {
-    repositories { jcenter() }
+    repositories {
+        jcenter()
+        gradlePluginPortal()
+    }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${project.ext.springBootVersion}")
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${project.ext.springBootVersion}"
+        classpath "com.bmuschko:gradle-docker-plugin:4.1.0"
     }
 }
 
 subprojects {
+    //https://bmuschko.github.io/gradle-docker-plugin/
+    apply plugin: 'com.bmuschko.docker-remote-api'
+
     //모든 웹프로젝트는 web-core 의존
     if (!it.name.startsWith('common')) {
         apply plugin: 'org.springframework.boot'
-    }
 
-    def projectName = it.name;
+        task copyJar(type: Copy) {
+            dependsOn 'jar'
+            from "${bootJar.archivePath}"
+            into rootProject.file("dockerfiles/${bootJar.baseName}")
+//    rename { String fileName ->
+//        fileName.replace("-${project.version}", "")
+//    }
+        }
+
+        //Build docker images
+        //task : clean build buildDockerImage
+        task buildDockerImage(type: DockerBuildImage) {
+            def tag = "${project.ext.dockerTag}${bootJar.baseName}:${version}"
+            dependsOn copyJar
+            inputDir = rootProject.file("dockerfiles/${bootJar.baseName}")
+            buildArgs = ['JAR_FILE': "${bootJar.archiveName}"]
+            tags = [tag]
+        }
+    }
 
     dependencies {
         compile "org.springframework.boot:spring-boot-starter-test"

@@ -26,6 +26,13 @@ public class DefaultController {
         return "redirect:/swagger-ui.html";
     }
 
+    @ApiIgnore
+    @RequestMapping(value = "/health", method = {RequestMethod.GET})
+    @ResponseBody
+    public String health() {
+        return "success";
+    }
+
     @ApiOperation(value = "Check information of client")
     @RequestMapping(value = "/checkClientInfo", method = {RequestMethod.GET})
     @ResponseBody

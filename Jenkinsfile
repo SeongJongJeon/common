@@ -1,3 +1,14 @@
+node {
+    checkout scm
+    def testImage = docker.build("seongjongjeon/exmaple-api", "./dockerfiles/api")
+
+    testImage.inside {
+        sh './gradlew build -x test'
+    }
+}
+
+
+
 pipeline {
     agent any
 
@@ -5,7 +16,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'make'
-                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
+                archiveArtifacts artifacts: '**/build/libs/*.jar', fingerprint: true
             }
         }
         stage('Test') {
@@ -16,6 +27,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying....'
+            }
+        }
+
+        stage('API') {
+            agent {
+                docker { image: 'java:8' }
             }
         }
     }

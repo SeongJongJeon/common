@@ -49,7 +49,7 @@ public class ApiMain {
     @Bean
     public ServletWebServerFactory servletContainer() {
         Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-        connector.setPort(8090);
+        connector.setPort(8080);
 
         TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
         tomcat.addAdditionalTomcatConnectors(connector);

@@ -1,3 +1,5 @@
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
 jar {
     baseName = 'api'
 }
@@ -6,7 +8,7 @@ dependencies {
     apply plugin: 'org.springframework.boot'
 
     compile project(':web:common')
-    
+
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "io.springfox:springfox-swagger2"
     compile "io.springfox:springfox-swagger-ui"

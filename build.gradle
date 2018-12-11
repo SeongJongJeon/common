@@ -1,26 +1,17 @@
-import org.apache.tools.ant.filters.ReplaceTokens
+plugins {
+    id 'maven'
+    //Spring Boot 버젼을 기입하지 않으면 해당 Management 에서 관리되는 버젼으로 사용됨. (dependencyManagement 섹션에 정의된 버젼을 사용하게 됨)
+    id 'io.spring.dependency-management' version '1.0.6.RELEASE'
+}
 
 def environment = hasProperty('env') ? env : 'local'
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        //Spring Boot 버젼을 기입하지 않으면 해당 Management 에서 관리되는 버젼으로 사용됨. (dependencyManagement 섹션에 정의된 버젼을 사용하게 됨)
-        //ref. https://docs.spring.io/dependency-management-plugin/docs/current-SNAPSHOT/reference/html5/
-        classpath 'io.spring.gradle:dependency-management-plugin:1.0.6.RELEASE'
-        classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:4.0.1'
-    }
-}
 
 allprojects {
     apply plugin: 'java'
     apply plugin: 'groovy'
     apply plugin: 'idea'
     apply plugin: 'io.spring.dependency-management'
-
+    
     group 'com.example'
     version '1.0-SNAPSHOT'
 
@@ -40,19 +31,6 @@ allprojects {
         }
     }
 
-    if (project.convention.findPlugin(JavaPluginConvention)) {
-        sourceSets.main.java.outputDir = new File(buildDir, "classes/main")
-        sourceSets.main.output.resourcesDir = new File(buildDir, "classes/main")
-        sourceSets.test.java.outputDir = new File(buildDir, "classes/test")
-        sourceSets.test.output.resourcesDir = new File(buildDir, "classes/test")
-    }
-
-    configurations { providedCompile }
-
-    sourceSets.main.compileClasspath += configurations.providedCompile
-    sourceSets.test.compileClasspath += configurations.providedCompile
-    sourceSets.test.runtimeClasspath += configurations.providedCompile
-
     sourceSets {
         main {
             resources {
@@ -68,10 +46,13 @@ allprojects {
             //database
             querydslVersion = '4.2.1'
             c3p0Version = '5.3.7.Final'
+
+            dockerTag = "seongjongjeon/"
         }
     }
 
     repositories {
+        jcenter()
         mavenCentral()
     }
 
@@ -115,6 +96,8 @@ allprojects {
         testCompile "junit:junit:4.12"
         testCompile "org.spockframework:spock-core"
         testCompile "org.spockframework:spock-spring"
+        //compileOnly == provided
+//        compileOnly "org.apache.commons:commons-lang3:3.3.2"
 
         compile "org.slf4j:slf4j-api"
         compile "org.slf4j:slf4j-api"
