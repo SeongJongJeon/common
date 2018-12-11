@@ -17,9 +17,6 @@ import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.operator.ContentSigner;
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-import sun.security.provider.X509Factory;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
@@ -28,10 +25,14 @@ import java.security.PublicKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Date;
 
 @Slf4j
 public class CertByECCUtil {
+    public static final String BEGIN_CERT = "-----BEGIN CERTIFICATE-----";
+    public static final String END_CERT = "-----END CERTIFICATE-----";
+
     /**
      * 인증서의 Hex String 값을 X509Certificate로 변환
      *
@@ -43,11 +44,8 @@ public class CertByECCUtil {
         try {
             byte[] decoded = null;
             if (isPem) {
-                BASE64Decoder decoder = new BASE64Decoder();
-                decoded = decoder.decodeBuffer(
-                        certVal.replaceAll(X509Factory.BEGIN_CERT, "")
-                                .replaceAll(X509Factory.END_CERT, "")
-                );
+                Base64.getDecoder().decode(certVal.replaceAll(BEGIN_CERT, "")
+                        .replaceAll(END_CERT, ""));
             } else {
                 decoded = Hex.decodeHex(certVal.toCharArray());
             }
@@ -172,16 +170,14 @@ public class CertByECCUtil {
      * @return
      */
     public static String generatePem(X509Certificate cert) {
-        BASE64Encoder encoder = new BASE64Encoder();
-
-        String permString = X509Factory.BEGIN_CERT + "\n";
+        String permString = BEGIN_CERT + "\n";
         try {
-            permString += encoder.encode(cert.getEncoded()) + "\n";
+            permString += Base64.getEncoder().encode(cert.getEncoded()) + "\n";
         } catch (Exception e) {
             log.error(e.getMessage());
             return null;
         }
-        permString += X509Factory.END_CERT;
+        permString += END_CERT;
 
         return permString;
     }

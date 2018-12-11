@@ -6,7 +6,10 @@ buildscript {
 }
 
 subprojects {
-    apply plugin: 'org.springframework.boot'
+    //모든 웹프로젝트는 web-core 의존
+    if (!it.name.startsWith('common')) {
+        apply plugin: 'org.springframework.boot'
+    }
 
     def projectName = it.name;
 

@@ -3,9 +3,9 @@ package com.common.web.common.config;
 import ch.qos.logback.classic.helpers.MDCInsertingServletFilter;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-public class CommonWebConfig extends WebMvcConfigurerAdapter {
+public class CommonWebConfig implements WebMvcConfigurer {
     /**
      * Logback의 [%X{req.xForwardedFor}] [%X{req.remoteHost}] [%X{req.requestURI}] 사용
      *
