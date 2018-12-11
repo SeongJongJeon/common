@@ -29,13 +29,6 @@ subprojects {
 //    }
         }
 
-        docker {
-            registryCredentials {
-                username = "${project.ext.dockerUser}".toString()
-                password = "${project.ext.dockerPwd}".toString()
-            }
-        }
-
         //Build docker images
         //task : clean build buildDockerImage
         task buildDockerImage(type: DockerBuildImage) {
@@ -46,6 +39,13 @@ subprojects {
         }
 
         task pushImage(type: DockerPushImage) {
+            docker {
+                registryCredentials {
+                    username = "${project.ext.dockerUser}".toString()
+                    password = "${project.ext.dockerPwd}".toString()
+                }
+            }
+            
             dependsOn buildDockerImage
             imageName = "${project.ext.dockerTag}${bootJar.baseName}".toString()
             tag = "${version}".toString()
