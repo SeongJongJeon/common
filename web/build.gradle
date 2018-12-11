@@ -1,4 +1,5 @@
 import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.DockerPushImage
 
 buildscript {
     repositories {
@@ -28,14 +29,26 @@ subprojects {
 //    }
         }
 
+        docker {
+            registryCredentials {
+                username = "${project.ext.dockerUser}".toString()
+                password = "${project.ext.dockerPwd}".toString()
+            }
+        }
+
         //Build docker images
         //task : clean build buildDockerImage
         task buildDockerImage(type: DockerBuildImage) {
-            def tag = "${project.ext.dockerTag}${bootJar.baseName}:${version}"
             dependsOn copyJar
             inputDir = rootProject.file("dockerfiles/${bootJar.baseName}")
             buildArgs = ['JAR_FILE': "${bootJar.archiveName}"]
-            tags = [tag]
+            tags = ["${project.ext.dockerTag}${bootJar.baseName}:${version}"]
+        }
+
+        task pushImage(type: DockerPushImage) {
+            dependsOn buildDockerImage
+            imageName = "${project.ext.dockerTag}${bootJar.baseName}".toString()
+            tag = "${version}".toString()
         }
     }
 

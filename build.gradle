@@ -5,18 +5,22 @@ plugins {
 }
 
 def environment = hasProperty('env') ? env : 'local'
+def envDockerUser = hasProperty('dockerUser') ? dockerUser : ''
+def envDockerPwd = hasProperty('dockerPwd') ? dockerPwd : ''
 
 allprojects {
     apply plugin: 'java'
     apply plugin: 'groovy'
     apply plugin: 'idea'
     apply plugin: 'io.spring.dependency-management'
-    
+
     group 'com.example'
     version '1.0-SNAPSHOT'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
+
+
 
     tasks.withType(JavaCompile) {
         options.encoding = 'UTF-8'
@@ -48,6 +52,9 @@ allprojects {
             c3p0Version = '5.3.7.Final'
 
             dockerTag = "seongjongjeon/"
+            environment = "${environment}"
+            dockerUser = "${envDockerUser}"
+            dockerPwd = "${envDockerPwd}"
         }
     }
 
