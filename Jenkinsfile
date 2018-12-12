@@ -7,8 +7,6 @@ node {
     }
 }
 
-
-#tes
 pipeline {
     agent any
 
